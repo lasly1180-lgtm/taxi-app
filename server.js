@@ -6,7 +6,50 @@ const path = require("path");
 
 const app = express();
 const db = new Database("database.db");
+const bcrypt = require("bcrypt");
 
+const adminPassword = bcrypt.hashSync("admin123", 10);
+
+db.prepare(`
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        password TEXT,
+        role TEXT,
+        grade TEXT
+    )
+`).run();
+
+db.prepare(`
+    INSERT OR IGNORE INTO users (username, password, role, grade)
+    VALUES (?, ?, ?, ?)
+`).run(
+    "admin",
+    adminPassword,
+    "admin",
+    "pdg"
+);
+const driverPassword = bcrypt.hashSync("chauffeur123", 10);
+
+db.prepare(`
+    INSERT OR IGNORE INTO users (username, password, role, grade)
+    VALUES (?, ?, ?, ?)
+`).run(
+    "chauffeur1",
+    driverPassword,
+    "driver",
+    "novice"
+);
+
+db.prepare(`
+    INSERT OR IGNORE INTO users (username, password, role, grade)
+    VALUES (?, ?, ?, ?)
+`).run(
+    "chauffeur2",
+    driverPassword,
+    "driver",
+    "expérimenté"
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
