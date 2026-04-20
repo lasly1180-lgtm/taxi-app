@@ -67,37 +67,34 @@ app.use(express.static(path.join(__dirname, "public")));
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
 
-    db.get(
-        "SELECT * FROM users WHERE username = ?",
-        [username],
-        async (err, user) => {
-            if (err) {
-                return res.status(500).json({ error: "Erreur serveur" });
-            }
+const user = db.prepare(
+    "SELECT * FROM users WHERE username = ?"
+).get(username);
 
-            if (!user) {
-                return res.status(401).json({ error: "Utilisateur introuvable" });
-            }
+if (!user) {
+    return res.status(401).json({
+        error: "Utilisateur introuvable"
+    });
+}
 
-            const validPassword = await bcrypt.compare(password, user.password);
+const validPassword = await bcrypt.compare(password, user.password);
 
-            if (!validPassword) {
-                return res.status(401).json({ error: "Mot de passe incorrect" });
-            }
+if (!validPassword) {
+    return res.status(401).json({
+        error: "Mot de passe incorrect"
+    });
+}
 
-            req.session.user = {
-                id: user.id,
-                username: user.username,
-                role: user.role,
-                grade: user.grade
-            };
+req.session.user = {
+    id: user.id,
+    username: user.username,
+    role: user.role,
+    grade: user.grade
+};
 
-            res.json({
-                message: "Connexion réussie",
-                user: req.session.user
-            });
-        }
-    );
+res.json({
+    message: "Connexion réussie",
+    user: req.session.user
 });
 
 /* SESSION */
