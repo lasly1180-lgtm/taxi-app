@@ -96,6 +96,7 @@ res.json({
     message: "Connexion réussie",
     user: req.session.user
 });
+});
 
 /* SESSION */
 app.get("/me", (req, res) => {
