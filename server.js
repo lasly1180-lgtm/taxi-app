@@ -6,7 +6,7 @@ const path = require("path");
 
 const app = express();
 const db = new Database("database.db");
-const bcrypt = require("bcrypt");
+
 
 const adminPassword = bcrypt.hashSync("admin123", 10);
 
