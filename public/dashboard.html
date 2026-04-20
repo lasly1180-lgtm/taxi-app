@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Chauffeur</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>🚖 Dashboard Chauffeur</h1>
+
+    <form id="transactionForm">
+
+        <select id="course_type" required>
+            <option value="">Choisir type de course</option>
+            <option value="manual">Course manuelle</option>
+            <option value="auto">Course automatique (KM)</option>
+        </select>
+
+        <input type="text" id="type" placeholder="Nom de la course" required>
+
+        <input type="number" id="total_amount" placeholder="Montant total">
+
+        <input type="number" id="km" placeholder="Kilomètres">
+
+        <button type="submit">Calculer + Enregistrer</button>
+    </form>
+
+    <p id="message"></p>
+<hr>
+
+<h2>Ajouter une dépense</h2>
+
+<select id="expenseType">
+    <option value="Essence">Essence</option>
+    <option value="Lavage">Lavage</option>
+    <option value="Entretien">Entretien</option>
+    <option value="Réparation">Réparation</option>
+    <option value="Péage">Péage</option>
+    <option value="Parking">Parking</option>
+    <option value="Autre">Autre</option>
+</select>
+
+<input type="number" id="expenseAmount" placeholder="Montant">
+
+<input type="text" id="expenseDescription" placeholder="Description">
+
+<button onclick="addExpense()">Ajouter dépense</button>
+
+<p id="expenseMessage"></p>
+
+    <button onclick="logout()">Déconnexion</button>
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
