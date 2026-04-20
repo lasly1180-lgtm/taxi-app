@@ -64,7 +64,7 @@ app.use(
 app.use(express.static(path.join(__dirname, "public")));
 
 /* LOGIN */
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
 const user = db.prepare(
