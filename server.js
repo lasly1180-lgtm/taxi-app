@@ -274,6 +274,9 @@ app.get("/drivers", (req, res) => {
         }
     );
 });
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "login.html"));
+});
 app.listen(3000, () => {
     console.log("Serveur lancé sur http://localhost:3000");
 });
