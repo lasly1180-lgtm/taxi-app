@@ -169,21 +169,23 @@ app.get("/transactions", (req, res) => {
 app.post("/update-grade", (req, res) => {
     const { username, grade } = req.body;
 
-    db.run(
-        "UPDATE users SET grade = ? WHERE username = ?",
-        [grade, username],
-        function (err) {
-            if (err) {
-                return res.status(500).json({
-                    error: "Erreur mise à jour grade"
-                });
-            }
+    try {
+        db.prepare(
+            "UPDATE users SET grade = ? WHERE username = ?"
+        ).run(
+            grade,
+            username
+        );
 
-            res.json({
-                message: "Grade mis à jour avec succès"
-            });
-        }
-    );
+        res.json({
+            message: "Grade mis à jour avec succès"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur mise à jour grade"
+        });
+    }
 });
 
 /* LOGOUT */
@@ -200,46 +202,49 @@ app.post("/add-driver", async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    db.run(
-        "INSERT INTO users (username, password, role, grade) VALUES (?, ?, ?, ?)",
-        [username, hashedPassword, "driver", grade],
-        function (err) {
-            if (err) {
-                return res.status(500).json({
-                    error: "Erreur ajout chauffeur"
-                });
-            }
+    try {
+        db.prepare(
+            "INSERT INTO users (username, password, role, grade) VALUES (?, ?, ?, ?)"
+        ).run(
+            username,
+            hashedPassword,
+            "driver",
+            grade
+        );
 
-            res.json({
-                message: "Chauffeur ajouté avec succès"
-            });
-        }
-    );
+        res.json({
+            message: "Chauffeur ajouté avec succès"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur ajout chauffeur"
+        });
+    }
 });
 app.post("/delete-driver", (req, res) => {
     const { username } = req.body;
 
-    db.run(
-        "DELETE FROM users WHERE username = ? AND role = 'driver'",
-        [username],
-        function (err) {
-            if (err) {
-                return res.status(500).json({
-                    error: "Erreur suppression chauffeur"
-                });
-            }
+    try {
+        const result = db.prepare(
+            "DELETE FROM users WHERE username = ? AND role = 'driver'"
+        ).run(username);
 
-            if (this.changes === 0) {
-                return res.json({
-                    error: "Chauffeur introuvable"
-                });
-            }
-
-            res.json({
-                message: "Chauffeur supprimé avec succès"
+        if (result.changes === 0) {
+            return res.json({
+                error: "Chauffeur introuvable"
             });
         }
-    );
+
+        res.json({
+            message: "Chauffeur supprimé avec succès"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur suppression chauffeur"
+        });
+    }
 });
 app.post("/rename-driver", (req, res) => {
     const { oldUsername, newUsername } = req.body;
