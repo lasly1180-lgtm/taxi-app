@@ -99,6 +99,7 @@ req.session.save(() => {
     });
 });
 
+});
 
 /* SESSION */
 app.get("/me", (req, res) => {
