@@ -41,34 +41,6 @@ if (loginForm) {
     });
 }
 
-if (transactionForm) {
-    transactionForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const type = document.getElementById("type").value;
-        const total_amount = document.getElementById("total_amount").value;
-        const driver_amount = document.getElementById("driver_amount").value;
-        const company_amount = document.getElementById("company_amount").value;
-        const km = document.getElementById("km").value;
-
-        const response = await fetch("/transaction", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                type,
-                total_amount,
-                driver_amount,
-                company_amount,
-                km
-            })
-        });
-
-        const data = await response.json();
-        message.innerText = data.message || data.error;
-    });
-}
 
 async function logout() {
     await fetch("/logout");
