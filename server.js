@@ -20,8 +20,10 @@ db.prepare(`
     )
 `).run();
 
+db.prepare("DELETE FROM users WHERE username = ?").run("admin");
+
 db.prepare(`
-    INSERT OR IGNORE INTO users (username, password, role, grade)
+    INSERT INTO users (username, password, role, grade)
     VALUES (?, ?, ?, ?)
 `).run(
     "admin",
@@ -29,10 +31,13 @@ db.prepare(`
     "admin",
     "pdg"
 );
+
 const driverPassword = bcrypt.hashSync("chauffeur123", 10);
 
+db.prepare("DELETE FROM users WHERE username = ?").run("chauffeur1");
+
 db.prepare(`
-    INSERT OR IGNORE INTO users (username, password, role, grade)
+    INSERT INTO users (username, password, role, grade)
     VALUES (?, ?, ?, ?)
 `).run(
     "chauffeur1",
@@ -41,8 +46,10 @@ db.prepare(`
     "novice"
 );
 
+db.prepare("DELETE FROM users WHERE username = ?").run("chauffeur2");
+
 db.prepare(`
-    INSERT OR IGNORE INTO users (username, password, role, grade)
+    INSERT INTO users (username, password, role, grade)
     VALUES (?, ?, ?, ?)
 `).run(
     "chauffeur2",
