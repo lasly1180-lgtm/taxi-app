@@ -192,7 +192,7 @@ if (transactionsDiv) {
                         totalExpenses += Number(expense.amount);
                     });
 
-                    const netProfit = total - totalExpenses;
+                    const netProfit = company - totalExpenses;
 
                     document.getElementById("netProfit").innerText = netProfit;
                 });
