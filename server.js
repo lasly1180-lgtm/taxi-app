@@ -332,6 +332,57 @@ app.get("/drivers", (req, res) => {
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
+/* SALAIRE HEBDOMADAIRE */
+app.get("/weekly-salary", (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({
+            error: "Non connecté"
+        });
+    }
+
+    try {
+        const row = db.prepare(`
+            SELECT COALESCE(SUM(driver_amount), 0) AS weekly_salary
+            FROM transactions
+            WHERE user_id = ?
+            AND date >= datetime('now', '-7 days')
+        `).get(req.session.user.id);
+
+        res.json({
+            weekly_salary: row.weekly_salary
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur calcul salaire"
+        });
+    }
+});
+/* SALAIRES HEBDOMADAIRES ADMIN */
+app.get("/weekly-salaries", (req, res) => {
+    try {
+        const rows = db.prepare(`
+            SELECT 
+                users.username,
+                users.grade,
+                COALESCE(SUM(transactions.driver_amount), 0) AS weekly_salary
+            FROM users
+            LEFT JOIN transactions
+                ON users.id = transactions.user_id
+                AND transactions.date >= datetime('now', '-7 days')
+            WHERE users.role = 'driver'
+            GROUP BY users.id
+            ORDER BY weekly_salary DESC
+        `).all();
+
+        res.json(rows);
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur lecture salaires"
+        });
+    }
+});
 app.listen(3000, () => {
     console.log("Serveur lancé sur http://localhost:3000");
 });
