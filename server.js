@@ -252,27 +252,29 @@ app.post("/delete-driver", (req, res) => {
 app.post("/rename-driver", (req, res) => {
     const { oldUsername, newUsername } = req.body;
 
-    db.run(
-        "UPDATE users SET username = ? WHERE username = ? AND role = 'driver'",
-        [newUsername, oldUsername],
-        function (err) {
-            if (err) {
-                return res.status(500).json({
-                    error: "Erreur modification nom chauffeur"
-                });
-            }
+    try {
+        const result = db.prepare(
+            "UPDATE users SET username = ? WHERE username = ? AND role = 'driver'"
+        ).run(
+            newUsername,
+            oldUsername
+        );
 
-            if (this.changes === 0) {
-                return res.json({
-                    error: "Chauffeur introuvable"
-                });
-            }
-
-            res.json({
-                message: "Nom du chauffeur modifié avec succès"
+        if (result.changes === 0) {
+            return res.json({
+                error: "Chauffeur introuvable"
             });
         }
-    );
+
+        res.json({
+            message: "Nom du chauffeur modifié avec succès"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur modification nom chauffeur"
+        });
+    }
 });
 app.post("/add-expense", (req, res) => {
     const { type, amount, description } = req.body;
