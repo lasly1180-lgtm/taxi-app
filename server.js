@@ -110,7 +110,9 @@ app.get("/me", (req, res) => {
 /* AJOUT TRANSACTION */
 app.post("/transaction", (req, res) => {
     if (!req.session.user) {
-        return res.status(401).json({ error: "Non connecté" });
+        return res.status(401).json({
+            error: "Non connecté"
+        });
     }
 
     const {
@@ -121,29 +123,30 @@ app.post("/transaction", (req, res) => {
         km
     } = req.body;
 
-    db.run(
-        `INSERT INTO transactions
-        (user_id, type, total_amount, driver_amount, company_amount, km)
-        VALUES (?, ?, ?, ?, ?, ?)`,
-        [
+    try {
+        const result = db.prepare(`
+            INSERT INTO transactions
+            (user_id, type, total_amount, driver_amount, company_amount, km)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `).run(
             req.session.user.id,
             type,
             total_amount,
             driver_amount,
             company_amount,
             km
-        ],
-        function (err) {
-            if (err) {
-                return res.status(500).json({ error: "Erreur insertion" });
-            }
+        );
 
-            res.json({
-                message: "Transaction enregistrée",
-                id: this.lastID
-            });
-        }
-    );
+        res.json({
+            message: "Transaction enregistrée",
+            id: result.lastInsertRowid
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur insertion"
+        });
+    }
 });
 
 /* LISTE TRANSACTIONS */
@@ -274,51 +277,52 @@ app.post("/rename-driver", (req, res) => {
 app.post("/add-expense", (req, res) => {
     const { type, amount, description } = req.body;
 
-    db.run(
-        "INSERT INTO expenses (type, amount, description) VALUES (?, ?, ?)",
-        [type, amount, description],
-        function (err) {
-            if (err) {
-                return res.status(500).json({
-                    error: "Erreur ajout dépense"
-                });
-            }
+    try {
+        db.prepare(
+            "INSERT INTO expenses (type, amount, description) VALUES (?, ?, ?)"
+        ).run(
+            type,
+            amount,
+            description
+        );
 
-            res.json({
-                message: "Dépense ajoutée avec succès"
-            });
-        }
-    );
+        res.json({
+            message: "Dépense ajoutée avec succès"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur ajout dépense"
+        });
+    }
 });
 app.get("/expenses", (req, res) => {
-    db.all(
-        "SELECT * FROM expenses ORDER BY date DESC",
-        [],
-        (err, rows) => {
-            if (err) {
-                return res.status(500).json({
-                    error: "Erreur lecture dépenses"
-                });
-            }
+    try {
+        const rows = db.prepare(
+            "SELECT * FROM expenses ORDER BY date DESC"
+        ).all();
 
-            res.json(rows);
-        }
-    );
+        res.json(rows);
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur lecture dépenses"
+        });
+    }
 });
 app.get("/drivers", (req, res) => {
-    db.all(
-        "SELECT username, grade, role FROM users WHERE role = 'driver' ORDER BY username ASC",
-        [],
-        (err, rows) => {
-            if (err) {
-                return res.status(500).json({
-                    error: "Erreur lecture chauffeurs"
-                });
-            }
+    try {
+        const rows = db.prepare(
+            "SELECT username, grade, role FROM users WHERE role = 'driver' ORDER BY username ASC"
+        ).all();
 
-            res.json(rows);
-        }
-    );
+        res.json(rows);
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur lecture chauffeurs"
+        });
+    }
 });
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
