@@ -2,6 +2,7 @@ const loginForm = document.getElementById("loginForm");
 const transactionForm = document.getElementById("transactionForm");
 const message = document.getElementById("message");
 
+
 if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -9,27 +10,33 @@ if (loginForm) {
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
 
-        const response = await fetch("/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username,
-                password
-            })
-        });
+        try {
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username,
+                    password
+                })
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (response.ok) {
-            if (data.user.role === "admin") {
-                window.location.href = "/admin.html";
-            } else {
-                window.location.href = "/dashboard.html";
+            alert(JSON.stringify(data));
+
+            if (response.ok) {
+                if (data.user.role === "admin") {
+                    window.location.href = "/admin.html";
+                } else {
+                    window.location.href = "/dashboard.html";
+                }
             }
-        } else {
-            message.innerText = data.error;
+
+        } catch (error) {
+            alert("Erreur fetch login");
+            console.log(error);
         }
     });
 }
