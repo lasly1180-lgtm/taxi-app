@@ -334,17 +334,22 @@ if (expensesList) {
 const driversList = document.getElementById("driversList");
 
 if (driversList) {
-    fetch("/drivers")
-        .then(res => res.json())
-        .then(data => {
+  fetch("/weekly-salaries")
+    .then(res => res.json())
+    .then(data => {
+        const driversList = document.getElementById("driversList");
+
+        if (driversList) {
+            driversList.innerHTML = "";
+
             data.forEach(driver => {
                 driversList.innerHTML += `
                     <div style="border:1px solid #ddd; padding:10px; margin:10px 0;">
                         <strong>${driver.username}</strong><br>
                         Grade : ${driver.grade}<br>
-                        Rôle : ${driver.role}
+                        Salaire semaine : ${driver.weekly_salary} € 
                     </div>
                 `;
             });
-        });
-}
+        }
+    });
