@@ -23,7 +23,7 @@ if (loginForm) {
         const data = await response.json();
 
         if (response.ok) {
-            if (data.user.role === "boss") {
+            if (data.user.role === "admin") {
                 window.location.href = "/admin.html";
             } else {
                 window.location.href = "/dashboard.html";
