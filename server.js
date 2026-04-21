@@ -92,9 +92,8 @@ req.session.user = {
     grade: user.grade
 };
 
-res.json({
-    message: "Connexion réussie",
-    user: req.session.user
+req.session.save(() => {
+   res.json(...)
 });
 });
 
