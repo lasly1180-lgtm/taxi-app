@@ -152,20 +152,23 @@ app.post("/transaction", (req, res) => {
 /* LISTE TRANSACTIONS */
 app.get("/transactions", (req, res) => {
     if (!req.session.user) {
-        return res.status(401).json({ error: "Non connecté" });
+        return res.status(401).json({
+            error: "Non connecté"
+        });
     }
 
-    db.all(
-        "SELECT * FROM transactions ORDER BY date DESC",
-        [],
-        (err, rows) => {
-            if (err) {
-                return res.status(500).json({ error: "Erreur lecture" });
-            }
+    try {
+        const rows = db.prepare(
+            "SELECT * FROM transactions ORDER BY date DESC"
+        ).all();
 
-            res.json(rows);
-        }
-    );
+        res.json(rows);
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur lecture"
+        });
+    }
 });
 
 /* UPDATE GRADE */
