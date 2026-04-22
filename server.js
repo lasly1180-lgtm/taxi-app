@@ -1,25 +1,40 @@
 const express = require("express");
-const Database = require("better-sqlite3");
+const { Pool } = require("pg");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 const path = require("path");
 
 const app = express();
-const db = new Database("database.db");
 
+const db = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
 
 const adminPassword = bcrypt.hashSync("admin123", 10);
 
 db.prepare(`
+
+db.query(`
     CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         username TEXT UNIQUE,
         password TEXT,
         role TEXT,
         grade TEXT
     )
-`).run();
-
+`);
+db.query(`
+    CREATE TABLE IF NOT EXISTS expenses (
+        id SERIAL PRIMARY KEY,
+        type TEXT,
+        amount REAL,
+        description TEXT,
+        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+`);
 db.prepare("DELETE FROM users WHERE username = ?").run("admin");
 
 db.prepare(`
@@ -79,9 +94,12 @@ app.use(express.static(path.join(__dirname, "public")));
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
-const user = db.prepare(
-    "SELECT * FROM users WHERE username = ?"
-).get(username);
+const result = await db.query(
+    "SELECT * FROM users WHERE username = $1",
+    [username]
+);
+
+const user = result.rows[0];
 
 if (!user) {
     return res.status(401).json({
@@ -123,7 +141,7 @@ app.get("/me", (req, res) => {
 });
 
 /* AJOUT TRANSACTION */
-app.post("/transaction", (req, res) => {
+app.post("/transaction", async (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({
             error: "Non connecté"
@@ -139,22 +157,26 @@ app.post("/transaction", (req, res) => {
     } = req.body;
 
     try {
-        const result = db.prepare(`
+        const result = await db.query(
+            `
             INSERT INTO transactions
             (user_id, type, total_amount, driver_amount, company_amount, km)
-            VALUES (?, ?, ?, ?, ?, ?)
-        `).run(
-            req.session.user.id,
-            type,
-            total_amount,
-            driver_amount,
-            company_amount,
-            km
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING id
+            `,
+            [
+                req.session.user.id,
+                type,
+                total_amount,
+                driver_amount,
+                company_amount,
+                km
+            ]
         );
 
         res.json({
             message: "Transaction enregistrée",
-            id: result.lastInsertRowid
+            id: result.rows[0].id
         });
 
     } catch (err) {
@@ -165,7 +187,8 @@ app.post("/transaction", (req, res) => {
 });
 
 /* LISTE TRANSACTIONS */
-app.get("/transactions", (req, res) => {
+
+app.get("/transactions", async (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({
             error: "Non connecté"
@@ -173,11 +196,11 @@ app.get("/transactions", (req, res) => {
     }
 
     try {
-        const rows = db.prepare(
+        const result = await db.query(
             "SELECT * FROM transactions ORDER BY date DESC"
-        ).all();
+        );
 
-        res.json(rows);
+        res.json(result.rows);
 
     } catch (err) {
         res.status(500).json({
@@ -187,16 +210,23 @@ app.get("/transactions", (req, res) => {
 });
 
 /* UPDATE GRADE */
-app.post("/update-grade", (req, res) => {
+app.post("/update-grade", async (req, res) => {
     const { username, grade } = req.body;
 
     try {
-        db.prepare(
-            "UPDATE users SET grade = ? WHERE username = ?"
-        ).run(
-            grade,
-            username
+        const result = await db.query(
+            "UPDATE users SET grade = $1 WHERE username = $2 RETURNING *",
+            [
+                grade,
+                username
+            ]
         );
+
+        if (result.rowCount === 0) {
+            return res.json({
+                error: "Chauffeur introuvable"
+            });
+        }
 
         res.json({
             message: "Grade mis à jour avec succès"
@@ -224,13 +254,14 @@ app.post("/add-driver", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
-        db.prepare(
-            "INSERT INTO users (username, password, role, grade) VALUES (?, ?, ?, ?)"
-        ).run(
-            username,
-            hashedPassword,
-            "driver",
-            grade
+        await db.query(
+            "INSERT INTO users (username, password, role, grade) VALUES ($1, $2, $3, $4)",
+            [
+                username,
+                hashedPassword,
+                "driver",
+                grade
+            ]
         );
 
         res.json({
@@ -243,15 +274,16 @@ app.post("/add-driver", async (req, res) => {
         });
     }
 });
-app.post("/delete-driver", (req, res) => {
+app.post("/delete-driver", async (req, res) => {
     const { username } = req.body;
 
     try {
-        const result = db.prepare(
-            "DELETE FROM users WHERE username = ? AND role = 'driver'"
-        ).run(username);
+        const result = await db.query(
+            "DELETE FROM users WHERE username = $1 AND role = 'driver' RETURNING *",
+            [username]
+        );
 
-        if (result.changes === 0) {
+        if (result.rowCount === 0) {
             return res.json({
                 error: "Chauffeur introuvable"
             });
@@ -267,18 +299,19 @@ app.post("/delete-driver", (req, res) => {
         });
     }
 });
-app.post("/rename-driver", (req, res) => {
+app.post("/rename-driver", async (req, res) => {
     const { oldUsername, newUsername } = req.body;
 
     try {
-        const result = db.prepare(
-            "UPDATE users SET username = ? WHERE username = ? AND role = 'driver'"
-        ).run(
-            newUsername,
-            oldUsername
+        const result = await db.query(
+            "UPDATE users SET username = $1 WHERE username = $2 AND role = 'driver' RETURNING *",
+            [
+                newUsername,
+                oldUsername
+            ]
         );
 
-        if (result.changes === 0) {
+        if (result.rowCount === 0) {
             return res.json({
                 error: "Chauffeur introuvable"
             });
@@ -294,16 +327,17 @@ app.post("/rename-driver", (req, res) => {
         });
     }
 });
-app.post("/add-expense", (req, res) => {
+app.post("/add-expense", async (req, res) => {
     const { type, amount, description } = req.body;
 
     try {
-        db.prepare(
-            "INSERT INTO expenses (type, amount, description) VALUES (?, ?, ?)"
-        ).run(
-            type,
-            amount,
-            description
+        await db.query(
+            "INSERT INTO expenses (type, amount, description) VALUES ($1, $2, $3)",
+            [
+                type,
+                amount,
+                description
+            ]
         );
 
         res.json({
@@ -316,13 +350,13 @@ app.post("/add-expense", (req, res) => {
         });
     }
 });
-app.get("/expenses", (req, res) => {
+app.get("/expenses", async (req, res) => {
     try {
-        const rows = db.prepare(
+        const result = await db.query(
             "SELECT * FROM expenses ORDER BY date DESC"
-        ).all();
+        );
 
-        res.json(rows);
+        res.json(result.rows);
 
     } catch (err) {
         res.status(500).json({
@@ -330,13 +364,13 @@ app.get("/expenses", (req, res) => {
         });
     }
 });
-app.get("/drivers", (req, res) => {
+app.get("/drivers", async (req, res) => {
     try {
-        const rows = db.prepare(
+        const result = await db.query(
             "SELECT username, grade, role FROM users WHERE role = 'driver' ORDER BY username ASC"
-        ).all();
+        );
 
-        res.json(rows);
+        res.json(result.rows);
 
     } catch (err) {
         res.status(500).json({
