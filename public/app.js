@@ -340,3 +340,16 @@ if (weeklySalaryElement) {
             weeklySalaryElement.innerText = data.weekly_salary || 0;
         });
 }
+const weeklySalaryElement = document.getElementById("weeklySalary");
+
+if (weeklySalaryElement) {
+    fetch("/weekly-salary")
+        .then(res => res.json())
+        .then(data => {
+            console.log("weekly salary:", data);
+            weeklySalaryElement.innerText = data.weekly_salary || 0;
+        })
+        .catch(err => {
+            console.log("Erreur weekly salary :", err);
+        });
+}

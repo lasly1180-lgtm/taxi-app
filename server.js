@@ -84,13 +84,7 @@ const driverPassword = bcrypt.hashSync("chauffeur123", 10);
         console.error("Erreur création utilisateurs :", err);
     }
 })();
-    
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.set("trust proxy", 1);
-
-app.use(
+    app.use(
     session({
         secret: "taxi-secret-key",
         resave: false,
@@ -98,11 +92,11 @@ app.use(
         cookie: {
             secure: false,
             httpOnly: true,
-            sameSite: "lax"
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 60 * 24
         }
     })
 );
-
 app.use(express.static(path.join(__dirname, "public")));
 /* LOGIN */
 app.post("/login", async (req, res) => {
