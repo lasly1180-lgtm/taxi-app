@@ -13,9 +13,7 @@ const db = new Pool({
     }
 });
 
-const adminPassword = bcrypt.hashSync("admin123", 10);
 
-db.prepare(`
 
 db.query(`
     CREATE TABLE IF NOT EXISTS users (
@@ -27,6 +25,18 @@ db.query(`
     )
 `);
 db.query(`
+    CREATE TABLE IF NOT EXISTS transactions (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER,
+        type TEXT,
+        total_amount REAL,
+        driver_amount REAL,
+        company_amount REAL,
+        km REAL,
+        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+`);
+db.query(`
     CREATE TABLE IF NOT EXISTS expenses (
         id SERIAL PRIMARY KEY,
         type TEXT,
@@ -35,31 +45,7 @@ db.query(`
         date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
 `);
-db.prepare("DELETE FROM users WHERE username = ?").run("admin");
 
-db.prepare(`
-    INSERT INTO users (username, password, role, grade)
-    VALUES (?, ?, ?, ?)
-`).run(
-    "admin",
-    adminPassword,
-    "admin",
-    "pdg"
-);
-
-const driverPassword = bcrypt.hashSync("chauffeur123", 10);
-
-db.prepare("DELETE FROM users WHERE username = ?").run("chauffeur1");
-
-db.prepare(`
-    INSERT INTO users (username, password, role, grade)
-    VALUES (?, ?, ?, ?)
-`).run(
-    "chauffeur1",
-    driverPassword,
-    "driver",
-    "novice"
-);
 
 const adminPassword = bcrypt.hashSync("admin123", 10);
 const driverPassword = bcrypt.hashSync("chauffeur123", 10);
