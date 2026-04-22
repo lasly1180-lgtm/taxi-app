@@ -332,4 +332,13 @@ if (driversList) {
             });
         }
     });
+const weeklySalaryElement = document.getElementById("weeklySalary");
+
+if (weeklySalaryElement) {
+    fetch("/weekly-salary")
+        .then(res => res.json())
+        .then(data => {
+            weeklySalaryElement.innerText = data.weekly_salary || 0;
+        });
+}
 }

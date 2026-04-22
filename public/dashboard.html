@@ -11,6 +11,13 @@
 <div class="container">
     <h1>🚖 Dashboard Chauffeur</h1>
 
+    <h2>💰 Mon salaire de la semaine</h2>
+    <p style="font-size: 22px; font-weight: bold;">
+        <span id="weeklySalary">0</span> €
+    </p>
+
+    <hr>
+
     <form id="transactionForm">
 
         <select id="course_type" required>
@@ -29,27 +36,28 @@
     </form>
 
     <p id="message"></p>
-<hr>
 
-<h2>Ajouter une dépense</h2>
+    <hr>
 
-<select id="expenseType">
-    <option value="Essence">Essence</option>
-    <option value="Lavage">Lavage</option>
-    <option value="Entretien">Entretien</option>
-    <option value="Réparation">Réparation</option>
-    <option value="Péage">Péage</option>
-    <option value="Parking">Parking</option>
-    <option value="Autre">Autre</option>
-</select>
+    <h2>Ajouter une dépense</h2>
 
-<input type="number" id="expenseAmount" placeholder="Montant">
+    <select id="expenseType">
+        <option value="Essence">Essence</option>
+        <option value="Lavage">Lavage</option>
+        <option value="Entretien">Entretien</option>
+        <option value="Réparation">Réparation</option>
+        <option value="Péage">Péage</option>
+        <option value="Parking">Parking</option>
+        <option value="Autre">Autre</option>
+    </select>
 
-<input type="text" id="expenseDescription" placeholder="Description">
+    <input type="number" id="expenseAmount" placeholder="Montant">
 
-<button onclick="addExpense()">Ajouter dépense</button>
+    <input type="text" id="expenseDescription" placeholder="Description">
 
-<p id="expenseMessage"></p>
+    <button onclick="addExpense()">Ajouter dépense</button>
+
+    <p id="expenseMessage"></p>
 
     <button onclick="logout()">Déconnexion</button>
 </div>
