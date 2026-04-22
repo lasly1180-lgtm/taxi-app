@@ -84,6 +84,11 @@ const driverPassword = bcrypt.hashSync("chauffeur123", 10);
         console.error("Erreur création utilisateurs :", err);
     }
 })();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.set("trust proxy", 1);
+
     app.use(
     session({
         secret: "taxi-secret-key",
@@ -97,6 +102,7 @@ const driverPassword = bcrypt.hashSync("chauffeur123", 10);
         }
     })
 );
+
 app.use(express.static(path.join(__dirname, "public")));
 /* LOGIN */
 app.post("/login", async (req, res) => {
@@ -438,9 +444,9 @@ app.get("/weekly-salary", async (req, res) => {
         const result = await db.query(
             `
             SELECT COALESCE(SUM(driver_amount), 0) AS weekly_salary
-            FROM transactions
-            WHERE user_id = $1
-            AND date >= NOW() - INTERVAL '7 days'
+FROM transactions
+WHERE username = $1
+AND date >= NOW() - INTERVAL '7 days'
             `,
             [req.session.user.id]
         );
