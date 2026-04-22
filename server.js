@@ -97,8 +97,7 @@ app.set("trust proxy", 1);
         cookie: {
             secure: false,
             httpOnly: true,
-            sameSite: "lax",
-            maxAge: 1000 * 60 * 60 * 24
+            sameSite: "lax"
         }
     })
 );
