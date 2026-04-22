@@ -108,6 +108,55 @@ app.use(
 );
 
 app.use(express.static(path.join(__dirname, "public")));
+/* LOGIN */
+app.post("/login", async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const result = await db.query(
+            "SELECT * FROM users WHERE username = $1",
+            [username]
+        );
+
+        const user = result.rows[0];
+
+        if (!user) {
+            return res.status(401).json({
+                error: "Utilisateur introuvable"
+            });
+        }
+
+        const validPassword = await bcrypt.compare(
+            password,
+            user.password
+        );
+
+        if (!validPassword) {
+            return res.status(401).json({
+                error: "Mot de passe incorrect"
+            });
+        }
+
+        req.session.user = {
+            id: user.id,
+            username: user.username,
+            role: user.role,
+            grade: user.grade
+        };
+
+        req.session.save(() => {
+            res.json({
+                message: "Connexion réussie",
+                user: req.session.user
+            });
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur serveur login"
+        });
+    }
+});
 
 
 /* SESSION */
