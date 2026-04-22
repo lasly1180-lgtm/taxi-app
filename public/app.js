@@ -330,8 +330,8 @@ if (driversList) {
                     </div>
                 `;
             });
+          });
         }
-    });
 const weeklySalaryElement = document.getElementById("weeklySalary");
 
 if (weeklySalaryElement) {
