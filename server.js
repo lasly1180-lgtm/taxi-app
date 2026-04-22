@@ -448,7 +448,7 @@ FROM transactions
 WHERE username = $1
 AND date >= NOW() - INTERVAL '7 days'
             `,
-            [req.session.user.id]
+            [req.session.user.username]
         );
 
         res.json({
