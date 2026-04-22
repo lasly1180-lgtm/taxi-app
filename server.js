@@ -111,7 +111,7 @@ app.set("trust proxy", 1);
     })
 );
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static("public"));
 /* LOGIN */
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
