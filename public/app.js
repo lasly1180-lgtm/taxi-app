@@ -341,4 +341,3 @@ if (weeklySalaryElement) {
             weeklySalaryElement.innerText = data.weekly_salary || 0;
         });
 }
-}
