@@ -12,6 +12,15 @@ const db = new Pool({
         rejectUnauthorized: false
     }
 });
+db.query(`
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username TEXT UNIQUE,
+        password TEXT,
+        role TEXT,
+        grade TEXT
+    )
+`);
 
 db.query(`
     CREATE TABLE IF NOT EXISTS transactions (
