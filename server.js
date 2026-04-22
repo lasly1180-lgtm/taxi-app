@@ -409,6 +409,32 @@ app.get("/drivers", async (req, res) => {
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
+
+/* SALAIRES HEBDOMADAIRES ADMIN */
+app.get("/weekly-salaries", async (req, res) => {
+    try {
+        const result = await db.query(`
+            SELECT
+                users.username,
+                users.grade,
+                COALESCE(SUM(transactions.driver_amount), 0) AS weekly_salary
+            FROM users
+            LEFT JOIN transactions
+                ON users.id = transactions.user_id
+                AND transactions.date >= NOW() - INTERVAL '7 days'
+            WHERE users.role = 'driver'
+            GROUP BY users.id, users.username, users.grade
+            ORDER BY weekly_salary DESC
+        `);
+
+        res.json(result.rows);
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur lecture salaires"
+        });
+    }
+});
 /* SALAIRE HEBDOMADAIRE */
 app.get("/weekly-salary", async (req, res) => {
     if (!req.session.user) {
@@ -435,31 +461,6 @@ app.get("/weekly-salary", async (req, res) => {
     } catch (err) {
         res.status(500).json({
             error: "Erreur calcul salaire"
-        });
-    }
-});
-/* SALAIRES HEBDOMADAIRES ADMIN */
-app.get("/weekly-salaries", async (req, res) => {
-    try {
-        const result = await db.query(`
-            SELECT
-                users.username,
-                users.grade,
-                COALESCE(SUM(transactions.driver_amount), 0) AS weekly_salary
-            FROM users
-            LEFT JOIN transactions
-                ON users.id = transactions.user_id
-                AND transactions.date >= NOW() - INTERVAL '7 days'
-            WHERE users.role = 'driver'
-            GROUP BY users.id, users.username, users.grade
-            ORDER BY weekly_salary DESC
-        `);
-
-        res.json(result.rows);
-
-    } catch (err) {
-        res.status(500).json({
-            error: "Erreur lecture salaires"
         });
     }
 });
