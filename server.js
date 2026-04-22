@@ -13,21 +13,11 @@ const db = new Pool({
     }
 });
 
-
-
-db.query(`
-    CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        username TEXT UNIQUE,
-        password TEXT,
-        role TEXT,
-        grade TEXT
-    )
-`);
 db.query(`
     CREATE TABLE IF NOT EXISTS transactions (
         id SERIAL PRIMARY KEY,
         user_id INTEGER,
+        username TEXT,
         type TEXT,
         total_amount REAL,
         driver_amount REAL,
@@ -36,6 +26,12 @@ db.query(`
         date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
 `);
+
+db.query(`
+    ALTER TABLE transactions
+    ADD COLUMN IF NOT EXISTS username TEXT
+`);
+
 db.query(`
     CREATE TABLE IF NOT EXISTS expenses (
         id SERIAL PRIMARY KEY,
@@ -188,12 +184,13 @@ app.post("/transaction", async (req, res) => {
         const result = await db.query(
             `
             INSERT INTO transactions
-            (user_id, type, total_amount, driver_amount, company_amount, km)
-            VALUES ($1, $2, $3, $4, $5, $6)
+            (user_id, username, type, total_amount, driver_amount, company_amount, km)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING id
             `,
             [
                 req.session.user.id,
+                req.session.user.username,
                 type,
                 total_amount,
                 driver_amount,
