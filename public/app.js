@@ -310,15 +310,13 @@ if (expensesList) {
             document.getElementById("totalExpenses").innerText = totalExpenses;
         });
 }
+
 const driversList = document.getElementById("driversList");
 
 if (driversList) {
-  fetch("/weekly-salaries")
-    .then(res => res.json())
-    .then(data => {
-        const driversList = document.getElementById("driversList");
-
-        if (driversList) {
+    fetch("/weekly-salaries")
+        .then(res => res.json())
+        .then(data => {
             driversList.innerHTML = "";
 
             data.forEach(driver => {
@@ -326,12 +324,13 @@ if (driversList) {
                     <div style="border:1px solid #ddd; padding:10px; margin:10px 0;">
                         <strong>${driver.username}</strong><br>
                         Grade : ${driver.grade}<br>
-                        Salaire semaine : ${driver.weekly_salary} € 
+                        Salaire semaine : ${driver.weekly_salary} €
                     </div>
                 `;
             });
-          });
-        }
+        });
+}
+
 const weeklySalaryElement = document.getElementById("weeklySalary");
 
 if (weeklySalaryElement) {
