@@ -61,75 +61,47 @@ db.prepare(`
     "novice"
 );
 
-db.prepare("DELETE FROM users WHERE username = ?").run("chauffeur2");
+const adminPassword = bcrypt.hashSync("admin123", 10);
+const driverPassword = bcrypt.hashSync("chauffeur123", 10);
 
-db.prepare(`
-    INSERT INTO users (username, password, role, grade)
-    VALUES (?, ?, ?, ?)
-`).run(
-    "chauffeur2",
-    driverPassword,
-    "driver",
-    "expérimenté"
-);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.set("trust proxy", 1);
+(async () => {
+    try {
+        await db.query(
+            "DELETE FROM users WHERE username = $1",
+            ["admin"]
+        );
 
-app.use(
-    session({
-        secret: "taxi-secret-key",
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            secure: false,
-            httpOnly: true,
-            sameSite: "lax"
-        }
-    })
-);
-app.use(express.static(path.join(__dirname, "public")));
+        await db.query(
+            "INSERT INTO users (username, password, role, grade) VALUES ($1, $2, $3, $4)",
+            ["admin", adminPassword, "admin", "pdg"]
+        );
 
-/* LOGIN */
-app.post("/login", async (req, res) => {
-    const { username, password } = req.body;
+        await db.query(
+            "DELETE FROM users WHERE username = $1",
+            ["chauffeur1"]
+        );
 
-const result = await db.query(
-    "SELECT * FROM users WHERE username = $1",
-    [username]
-);
+        await db.query(
+            "INSERT INTO users (username, password, role, grade) VALUES ($1, $2, $3, $4)",
+            ["chauffeur1", driverPassword, "driver", "novice"]
+        );
 
-const user = result.rows[0];
+        await db.query(
+            "DELETE FROM users WHERE username = $1",
+            ["chauffeur2"]
+        );
 
-if (!user) {
-    return res.status(401).json({
-        error: "Utilisateur introuvable"
-    });
-}
+        await db.query(
+            "INSERT INTO users (username, password, role, grade) VALUES ($1, $2, $3, $4)",
+            ["chauffeur2", driverPassword, "driver", "expérimenté"]
+        );
 
-const validPassword = await bcrypt.compare(password, user.password);
+        console.log("Utilisateurs par défaut créés");
 
-if (!validPassword) {
-    return res.status(401).json({
-        error: "Mot de passe incorrect"
-    });
-}
-
-req.session.user = {
-    id: user.id,
-    username: user.username,
-    role: user.role,
-    grade: user.grade
-};
-
-req.session.save(() => {
-    res.json({
-        message: "Connexion réussie",
-        user: req.session.user
-    });
-});
-
-});
+    } catch (err) {
+        console.error("Erreur création utilisateurs :", err);
+    }
+})();
 
 /* SESSION */
 app.get("/me", (req, res) => {
@@ -382,7 +354,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 /* SALAIRE HEBDOMADAIRE */
-app.get("/weekly-salary", (req, res) => {
+app.get("/weekly-salary", async (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({
             error: "Non connecté"
@@ -390,15 +362,18 @@ app.get("/weekly-salary", (req, res) => {
     }
 
     try {
-        const row = db.prepare(`
+        const result = await db.query(
+            `
             SELECT COALESCE(SUM(driver_amount), 0) AS weekly_salary
             FROM transactions
-            WHERE user_id = ?
-            AND date >= datetime('now', '-7 days')
-        `).get(req.session.user.id);
+            WHERE user_id = $1
+            AND date >= NOW() - INTERVAL '7 days'
+            `,
+            [req.session.user.id]
+        );
 
         res.json({
-            weekly_salary: row.weekly_salary
+            weekly_salary: result.rows[0].weekly_salary
         });
 
     } catch (err) {
@@ -408,23 +383,23 @@ app.get("/weekly-salary", (req, res) => {
     }
 });
 /* SALAIRES HEBDOMADAIRES ADMIN */
-app.get("/weekly-salaries", (req, res) => {
+app.get("/weekly-salaries", async (req, res) => {
     try {
-        const rows = db.prepare(`
-            SELECT 
+        const result = await db.query(`
+            SELECT
                 users.username,
                 users.grade,
                 COALESCE(SUM(transactions.driver_amount), 0) AS weekly_salary
             FROM users
             LEFT JOIN transactions
                 ON users.id = transactions.user_id
-                AND transactions.date >= datetime('now', '-7 days')
+                AND transactions.date >= NOW() - INTERVAL '7 days'
             WHERE users.role = 'driver'
-            GROUP BY users.id
+            GROUP BY users.id, users.username, users.grade
             ORDER BY weekly_salary DESC
-        `).all();
+        `);
 
-        res.json(rows);
+        res.json(result.rows);
 
     } catch (err) {
         res.status(500).json({
