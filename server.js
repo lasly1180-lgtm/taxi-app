@@ -411,9 +411,14 @@ app.get("/drivers", async (req, res) => {
         });
     }
 });
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "login.html"));
+app.get("/app.js", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "app.js"));
 });
+
+app.get("/style.css", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "style.css"));
+});
+app.get("/", (req, res) => {
 
 /* SALAIRES HEBDOMADAIRES ADMIN */
 app.get("/weekly-salaries", async (req, res) => {
