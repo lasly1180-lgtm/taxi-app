@@ -387,3 +387,23 @@ async function deleteTransaction() {
 
     message.innerText = data.message || data.error;
 }
+async function updateTransaction() {
+    const id = document.getElementById("updateTransactionId").value;
+    const total_amount = document.getElementById("newTotalAmount").value;
+    const message = document.getElementById("updateTransactionMessage");
+
+    const response = await fetch("/update-transaction", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id,
+            total_amount
+        })
+    });
+
+    const data = await response.json();
+
+    message.innerText = data.message || data.error;
+}

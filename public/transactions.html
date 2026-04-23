@@ -10,8 +10,44 @@
 
 <div class="container">
     <h1>🚖 Historique des Courses</h1>
+
+
+<h2>✏️ Modifier une course</h2>
+
+<input
+    type="number"
+    id="updateTransactionId"
+    placeholder="ID de la course"
+/>
+
+<input
+    type="number"
+    id="newTotalAmount"
+    placeholder="Nouveau montant"
+/>
+
+<button onclick="updateTransaction()">
+    Modifier
+</button>
+
+<p id="updateTransactionMessage"></p>
+
+<hr>
 <h2>🗑️ Supprimer une course</h2>
 
+<input
+    type="number"
+    id="deleteTransactionId"
+    placeholder="ID de la course"
+/>
+
+<button onclick="deleteTransaction()">
+    Supprimer
+</button>
+
+<p id="deleteTransactionMessage"></p>
+
+<hr>
 <input
     type="number"
     id="deleteTransactionId"

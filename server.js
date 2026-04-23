@@ -514,6 +514,35 @@ app.post("/delete-transaction", async (req, res) => {
         });
     }
 });
+app.post("/update-transaction", async (req, res) => {
+    const {
+        id,
+        total_amount
+    } = req.body;
+
+    try {
+        await db.query(
+            `
+            UPDATE transactions
+            SET total_amount = $1
+            WHERE id = $2
+            `,
+            [
+                total_amount,
+                id
+            ]
+        );
+
+        res.json({
+            message: "Course modifiée avec succès"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur modification course"
+        });
+    }
+});
 app.listen(3000, () => {
     console.log("Serveur lancé sur http://localhost:3000");
 });
