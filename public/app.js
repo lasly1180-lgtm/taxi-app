@@ -300,10 +300,11 @@ if (expensesList) {
 
                 expensesList.innerHTML += `
                     <div style="border:1px solid #ddd; padding:10px; margin:10px 0;">
-                        <strong>${expense.type}</strong><br>
-                        Montant : ${expense.amount} €<br>
-                        Description : ${expense.description}<br>
-                        Date : ${expense.date}
+                       <strong>${expense.type}</strong><br>
+Nom chauffeur : ${expense.username}<br>
+Montant : ${expense.amount} €<br>
+Description : ${expense.description}<br>
+Date : ${expense.date}
                     </div>
                 `;
             });

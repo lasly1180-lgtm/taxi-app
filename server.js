@@ -367,13 +367,14 @@ app.post("/add-expense", async (req, res) => {
     const { type, amount, description } = req.body;
 
     try {
-        await db.query(
-            "INSERT INTO expenses (type, amount, description) VALUES ($1, $2, $3)",
-            [
-                type,
-                amount,
-                description
-            ]
+       await db.query(
+    "INSERT INTO expenses (type, amount, description, username) VALUES ($1, $2, $3, $4)",
+         [
+    type,
+    amount,
+    description,
+    req.session.user.username
+]
         );
 
         res.json({
