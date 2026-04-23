@@ -418,8 +418,10 @@ app.get("/app.js", (req, res) => {
 app.get("/style.css", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "style.css"));
 });
-app.get("/", (req, res) => {
 
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "login.html"));
+});
 /* SALAIRES HEBDOMADAIRES ADMIN */
 app.get("/weekly-salaries", async (req, res) => {
     try {
