@@ -43,14 +43,17 @@ db.query(`
 
 db.query(`
     CREATE TABLE IF NOT EXISTS expenses (
-        id SERIAL PRIMARY KEY,
         type TEXT,
-        amount REAL,
-        description TEXT,
-        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+amount REAL,
+description TEXT,
+username TEXT,
+date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
 `);
-
+db.query(`
+    ALTER TABLE expenses
+    ADD COLUMN IF NOT EXISTS username TEXT
+`);
 
 const adminPassword = bcrypt.hashSync("admin123", 10);
 const driverPassword = bcrypt.hashSync("chauffeur123", 10);
