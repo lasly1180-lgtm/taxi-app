@@ -352,3 +352,19 @@ if (weeklySalaryElement) {
             console.log("Erreur weekly salary :", err);
         });
 }
+async function resetWeek() {
+    const confirmReset = confirm(
+        "Voulez-vous vraiment supprimer toutes les courses et dépenses de la semaine ?"
+    );
+
+    if (!confirmReset) return;
+
+    const response = await fetch("/reset-week", {
+        method: "POST"
+    });
+
+    const data = await response.json();
+
+    document.getElementById("resetMessage").innerText =
+        data.message || data.error;
+}

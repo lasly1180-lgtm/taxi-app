@@ -480,6 +480,21 @@ AND date >= NOW() - INTERVAL '7 days'
         });
     }
 });
+app.post("/reset-week", async (req, res) => {
+    try {
+        await db.query("DELETE FROM transactions");
+        await db.query("DELETE FROM expenses");
+
+        res.json({
+            message: "Semaine réinitialisée avec succès"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur reset semaine"
+        });
+    }
+});
 app.listen(3000, () => {
     console.log("Serveur lancé sur http://localhost:3000");
 });
