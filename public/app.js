@@ -148,13 +148,14 @@ if (transactionsDiv) {
                 transactionsDiv.innerHTML += `
                     <div style="border:1px solid #ddd; padding:10px; margin:10px 0;">
                         <strong>${t.type}</strong><br>
-                        Total : ${t.total_amount} €<br>
-                        Chauffeur : ${t.driver_amount} €<br>
-                        Société : ${t.company_amount} €<br>
-                        KM : ${t.km}<br>
-                        Date : ${t.date}
-                    </div>
-                `;
+Nom chauffeur : ${t.username}<br>
+Total : ${t.total_amount} €<br>
+Gain chauffeur : ${t.driver_amount} €<br>
+Société : ${t.company_amount} €<br>
+KM : ${t.km}<br>
+Date : ${t.date}
+</div>
+`;
             });
 
             document.getElementById("total").innerText = total;
