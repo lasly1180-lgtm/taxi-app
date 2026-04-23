@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Chauffeurs</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>👨‍✈️ Gestion Chauffeurs</h1>
+
+    <h2>Ajouter un chauffeur</h2>
+    <input type="text" id="newDriverUsername" placeholder="Nom chauffeur">
+    <input type="password" id="newDriverPassword" placeholder="Mot de passe">
+    <select id="newDriverGrade">
+        <option value="novice">Novice</option>
+        <option value="expérimenté">Expérimenté</option>
+        <option value="vétéran">Vétéran</option>
+        <option value="DRH">DRH</option>
+        <option value="co pdg">Co PDG</option>
+        <option value="pdg">PDG</option>
+    </select>
+    <button onclick="addDriver()">Ajouter</button>
+    <p id="addDriverMessage"></p>
+
+    <hr>
+
+    <h2>Supprimer un chauffeur</h2>
+    <input type="text" id="deleteDriverUsername" placeholder="Nom chauffeur">
+    <button onclick="deleteDriver()">Supprimer</button>
+    <p id="deleteDriverMessage"></p>
+
+    <hr>
+
+    <h2>Renommer un chauffeur</h2>
+    <input type="text" id="oldDriverUsername" placeholder="Ancien nom">
+    <input type="text" id="newDriverUsernameRename" placeholder="Nouveau nom">
+    <button onclick="renameDriver()">Renommer</button>
+    <p id="renameDriverMessage"></p>
+
+    <hr>
+
+    <h2>Changer un grade</h2>
+    <input type="text" id="driverUsername" placeholder="Nom chauffeur">
+    <select id="newGrade">
+        <option value="novice">Novice</option>
+        <option value="expérimenté">Expérimenté</option>
+        <option value="vétéran">Vétéran</option>
+        <option value="DRH">DRH</option>
+        <option value="co pdg">Co PDG</option>
+        <option value="pdg">PDG</option>
+    </select>
+    <button onclick="updateGrade()">Modifier</button>
+    <p id="gradeMessage"></p>
+
+    <br><br>
+
+    <a href="admin.html">
+        <button>⬅ Retour Admin</button>
+    </a>
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>

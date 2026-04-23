@@ -3,111 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Patron</title>
+    <title>Admin Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
-    <h1>👑 Panel Patron</h1>
+    <h1>👑 Dashboard Admin</h1>
 
-    <div class="stats">
-        <h2>Statistiques</h2>
+    <div class="admin-menu">
+        <a href="transactions.html" class="menu-btn">
+            🚖 Historique Courses
+        </a>
 
-        <p>Total encaissé : <span id="total">0</span> €</p>
-        <p>Part chauffeurs : <span id="drivers">0</span> €</p>
-        <p>Part société : <span id="company">0</span> €</p>
-        <p>Total kilomètres : <span id="kms">0</span> km</p>
-<p>Bénéfice net : <span id="netProfit">0</span> €</p>
+        <a href="drivers.html" class="menu-btn">
+            👨‍✈️ Gestion Chauffeurs
+        </a>
+
+        <a href="expenses.html" class="menu-btn">
+            💸 Gestion Dépenses
+        </a>
+
+        <a href="salaries.html" class="menu-btn">
+            📊 Salaires Chauffeurs
+        </a>
     </div>
 
     <hr>
-<h2>Liste des chauffeurs</h2>
-<div id="driversList"></div>
 
-    <h2>Historique des courses</h2>
-    <div id="transactions"></div>
+    <h2>🔄 Fin de semaine</h2>
 
-    <br>
-<hr>
+    <button onclick="resetWeek()">
+        Remettre toute la semaine à zéro
+    </button>
 
-<h2>Gestion des chauffeurs</h2>
-
-<input type="text" id="driverUsername" placeholder="Nom du chauffeur">
-
-<select id="newGrade">
-    <option value="novice">novice</option>
-    <option value="expérimenté">expérimenté</option>
-    <option value="vétéran">vétéran</option>
-    <option value="DRH">DRH</option>
-    <option value="co pdg">co pdg</option>
-    <option value="pdg">pdg</option>
-</select>
-
-<button onclick="updateGrade()">Modifier le grade</button>
-
-<p id="gradeMessage"></p>
-<hr>
-
-<h2>Ajouter un chauffeur</h2>
-
-<input type="text" id="newDriverUsername" placeholder="Nom du chauffeur">
-
-<input type="password" id="newDriverPassword" placeholder="Mot de passe">
-
-<select id="newDriverGrade">
-    <option value="novice">novice</option>
-    <option value="expérimenté">expérimenté</option>
-    <option value="vétéran">vétéran</option>
-    <option value="DRH">DRH</option>
-    <option value="co pdg">co pdg</option>
-    <option value="pdg">pdg</option>
-</select>
-
-<button onclick="addDriver()">Ajouter chauffeur</button>
-
-<p id="addDriverMessage"></p>
-<hr>
-
-<h2>Supprimer un chauffeur</h2>
-
-<input type="text" id="deleteDriverUsername" placeholder="Nom du chauffeur à supprimer">
-
-<button onclick="deleteDriver()">Supprimer chauffeur</button>
-
-<p id="deleteDriverMessage"></p>
-<hr>
-
-<h2>Renommer un chauffeur</h2>
-
-<input type="text" id="oldDriverUsername" placeholder="Ancien nom du chauffeur">
-
-<input type="text" id="newDriverUsernameRename" placeholder="Nouveau nom du chauffeur">
-
-<button onclick="renameDriver()">Renommer chauffeur</button>
-
-<p id="renameDriverMessage"></p>
-<hr>
-
-<h2>Dépenses Chauffeurs</h2>
-
-<p>Total dépenses : <span id="totalExpenses">0</span> €</p>
-
-<div id="expensesList"></div>
-<hr>
-
-<h2>Liste des chauffeurs</h2>
-
-<div id="driversList"></div>
-<hr>
-
-<h2>🔄 Fin de semaine</h2>
-
-<button onclick="resetWeek()">
-    Remettre toute la semaine à zéro
-</button>
-
-<p id="resetMessage"></p>
+    <p id="resetMessage"></p>
 
     <button onclick="logout()">Déconnexion</button>
 </div>
