@@ -10,6 +10,21 @@
 
 <div class="container">
     <h1>🚖 Historique des Courses</h1>
+<h2>🗑️ Supprimer une course</h2>
+
+<input
+    type="number"
+    id="deleteTransactionId"
+    placeholder="ID de la course"
+/>
+
+<button onclick="deleteTransaction()">
+    Supprimer
+</button>
+
+<p id="deleteTransactionMessage"></p>
+
+<hr>
 
     <div id="transactions"></div>
 

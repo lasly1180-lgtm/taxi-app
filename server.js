@@ -495,6 +495,25 @@ app.post("/reset-week", async (req, res) => {
         });
     }
 });
+app.post("/delete-transaction", async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        await db.query(
+            "DELETE FROM transactions WHERE id = $1",
+            [id]
+        );
+
+        res.json({
+            message: "Course supprimée avec succès"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur suppression course"
+        });
+    }
+});
 app.listen(3000, () => {
     console.log("Serveur lancé sur http://localhost:3000");
 });

@@ -153,6 +153,7 @@ if (transactionsDiv) {
                 transactionsDiv.innerHTML += `
                     <div style="border:1px solid #ddd; padding:10px; margin:10px 0;">
                         <strong>${t.type}</strong><br>
+ID : ${t.id}<br>
 Nom chauffeur : ${t.username}<br>
 Total : ${t.total_amount} €<br>
 Gain chauffeur : ${t.driver_amount} €<br>
@@ -367,4 +368,22 @@ async function resetWeek() {
 
     document.getElementById("resetMessage").innerText =
         data.message || data.error;
+}
+async function deleteTransaction() {
+    const id = document.getElementById("deleteTransactionId").value;
+    const message = document.getElementById("deleteTransactionMessage");
+
+    const response = await fetch("/delete-transaction", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id
+        })
+    });
+
+    const data = await response.json();
+
+    message.innerText = data.message || data.error;
 }
