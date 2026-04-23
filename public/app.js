@@ -107,8 +107,13 @@ if (transactionForm) {
                 break;
         }
 
-        const driver_amount = (total_amount * percentage) / 100;
-        const company_amount = total_amount - driver_amount;
+      let driver_amount = 0;
+let company_amount = total_amount;
+
+if (course_type === "auto") {
+    driver_amount = (total_amount * percentage) / 100;
+    company_amount = total_amount - driver_amount;
+}
 
         const response = await fetch("/transaction", {
             method: "POST",
