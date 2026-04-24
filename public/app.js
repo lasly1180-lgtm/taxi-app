@@ -140,15 +140,14 @@ if (transactionsDiv) {
         .then(res => res.json())
         .then(data => {
             let total = 0;
-            let drivers = 0;
-            let company = 0;
-            let kms = 0;
+                        let company = 0;
+            
 
             data.forEach(t => {
                 total += Number(t.total_amount);
-                drivers += Number(t.driver_amount);
+                
                 company += Number(t.company_amount);
-                kms += Number(t.km);
+                
 
                 transactionsDiv.innerHTML += `
                     <div style="border:1px solid #ddd; padding:10px; margin:10px 0;">
@@ -164,24 +163,24 @@ Date : ${t.date}
 `;
             });
 
-            document.getElementById("total").innerText = total;
-            document.getElementById("drivers").innerText = drivers;
-            document.getElementById("company").innerText = company;
-            document.getElementById("kms").innerText = kms;
+          document.getElementById("total").innerText = total;
+document.getElementById("company").innerText = company;
 
-            fetch("/expenses")
-                .then(res => res.json())
-                .then(expenses => {
-                    let totalExpenses = 0;
+fetch("/expenses")
+    .then(res => res.json())
+    .then(expenses => {
+        let totalExpenses = 0;
 
-                    expenses.forEach(expense => {
-                        totalExpenses += Number(expense.amount);
-                    });
+        expenses.forEach(expense => {
+            totalExpenses += Number(expense.amount);
+        });
 
-                    const netProfit = company - totalExpenses;
+        document.getElementById("totalExpenses").innerText = totalExpenses;
 
-                    document.getElementById("netProfit").innerText = netProfit;
-                });
+        const netProfit = company - totalExpenses;
+
+        document.getElementById("netProfit").innerText = netProfit;
+    }); 
         });
 }
 async function updateGrade() {
