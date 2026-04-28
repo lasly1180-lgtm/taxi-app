@@ -306,6 +306,11 @@ if (expensesList) {
                 expensesList.innerHTML += `
                     <div style="border:1px solid #ddd; padding:10px; margin:10px 0;">
                        <strong>${expense.type}</strong><br>
+ID : ${expense.id}<br>
+Nom chauffeur : ${expense.username}<br>
+Montant : ${expense.amount} €<br>
+Description : ${expense.description}<br>
+Date : ${expense.date}
 Nom chauffeur : ${expense.username}<br>
 Montant : ${expense.amount} €<br>
 Description : ${expense.description}<br>
@@ -399,6 +404,24 @@ async function updateTransaction() {
         body: JSON.stringify({
             id,
             total_amount
+        })
+    });
+
+    const data = await response.json();
+
+    message.innerText = data.message || data.error;
+}
+async function deleteExpense() {
+    const id = document.getElementById("deleteExpenseId").value;
+    const message = document.getElementById("deleteExpenseMessage");
+
+    const response = await fetch("/delete-expense", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id
         })
     });
 

@@ -543,6 +543,25 @@ app.post("/update-transaction", async (req, res) => {
         });
     }
 });
+app.post("/delete-expense", async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        await db.query(
+            "DELETE FROM expenses WHERE id = $1",
+            [id]
+        );
+
+        res.json({
+            message: "Dépense supprimée avec succès"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur suppression dépense"
+        });
+    }
+});
 app.listen(3000, () => {
     console.log("Serveur lancé sur http://localhost:3000");
 });
