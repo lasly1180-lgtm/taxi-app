@@ -40,6 +40,15 @@ db.query(`
     ALTER TABLE transactions
     ADD COLUMN IF NOT EXISTS username TEXT
 `);
+db.query(`
+    ALTER TABLE transactions
+    ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT false
+`);
+
+db.query(`
+    ALTER TABLE expenses
+    ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT false
+`);
 
 db.query(`
     CREATE TABLE IF NOT EXISTS expenses (
@@ -242,7 +251,12 @@ app.get("/transactions", async (req, res) => {
 
     try {
         const result = await db.query(
-            "SELECT * FROM transactions ORDER BY date DESC"
+            `
+            SELECT *
+            FROM transactions
+            WHERE archived = false
+            ORDER BY date DESC
+            `
         );
 
         res.json(result.rows);
@@ -403,7 +417,12 @@ try {
 app.get("/expenses", async (req, res) => {
     try {
         const result = await db.query(
-            "SELECT * FROM expenses ORDER BY date DESC"
+            `
+            SELECT *
+            FROM expenses
+            WHERE archived = false
+            ORDER BY date DESC
+            `
         );
 
         res.json(result.rows);
@@ -532,7 +551,11 @@ app.post("/delete-transaction", async (req, res) => {
 
     try {
         await db.query(
-            "DELETE FROM transactions WHERE id = $1",
+            `
+            UPDATE transactions
+            SET archived = true
+            WHERE id = $1
+            `,
             [id]
         );
 
@@ -580,7 +603,11 @@ app.post("/delete-expense", async (req, res) => {
 
     try {
         await db.query(
-            "DELETE FROM expenses WHERE id = $1",
+            `
+            UPDATE expenses
+            SET archived = true
+            WHERE id = $1
+            `,
             [id]
         );
 
