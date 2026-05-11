@@ -465,34 +465,42 @@ app.get("/weekly-salaries", async (req, res) => {
     }
 });
 /* SALAIRE HEBDOMADAIRE */
-const result = await db.query(
-    `
-    SELECT
-        (
-            COALESCE(
+app.get("/weekly-salary", async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({
+            error: "Non connecté"
+        });
+    }
+
+    try {
+        const result = await db.query(
+            `
+            SELECT
                 (
-                    SELECT SUM(driver_amount)
-                    FROM transactions
-                    WHERE username = $1
-                    AND date >= NOW() - INTERVAL '7 days'
-                ),
-                0
-            )
-            +
-            COALESCE(
-                (
-                    SELECT SUM(amount)
-                    FROM expenses
-                    WHERE username = $1
-                    AND reimbursed = true
-                    AND date >= NOW() - INTERVAL '7 days'
-                ),
-                0
-            )
-        ) AS weekly_salary
-    `,
-    [req.session.user.username]
-);
+                    COALESCE(
+                        (
+                            SELECT SUM(driver_amount)
+                            FROM transactions
+                            WHERE username = $1
+                            AND date >= NOW() - INTERVAL '7 days'
+                        ),
+                        0
+                    )
+                    +
+                    COALESCE(
+                        (
+                            SELECT SUM(amount)
+                            FROM expenses
+                            WHERE username = $1
+                            AND reimbursed = true
+                            AND date >= NOW() - INTERVAL '7 days'
+                        ),
+                        0
+                    )
+                ) AS weekly_salary
+            `,
+            [req.session.user.username]
+        );
 
         res.json({
             weekly_salary: result.rows[0].weekly_salary
