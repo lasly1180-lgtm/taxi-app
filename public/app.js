@@ -107,13 +107,8 @@ if (transactionForm) {
                 break;
         }
 
-      let driver_amount = 0;
-let company_amount = total_amount;
-
-if (course_type === "auto") {
-    driver_amount = (total_amount * percentage) / 100;
-    company_amount = total_amount - driver_amount;
-}
+const driver_amount = (total_amount * percentage) / 100;
+const company_amount = total_amount - driver_amount;
 
         const response = await fetch("/transaction", {
             method: "POST",
@@ -303,20 +298,18 @@ if (expensesList) {
             data.forEach(expense => {
                 totalExpenses += Number(expense.amount);
 
-                expensesList.innerHTML += `
-                    <div style="border:1px solid #ddd; padding:10px; margin:10px 0;">
-                       <strong>${expense.type}</strong><br>
-ID : ${expense.id}<br>
-Nom chauffeur : ${expense.username}<br>
-Montant : ${expense.amount} €<br>
-Description : ${expense.description}<br>
-Date : ${expense.date}
-Nom chauffeur : ${expense.username}<br>
-Montant : ${expense.amount} €<br>
-Description : ${expense.description}<br>
-Date : ${expense.date}
-                    </div>
-                `;
+expensesList.innerHTML += `
+    <div>
+        <strong>${expense.type}</strong><br>
+        ID : ${expense.id}<br>
+        Nom chauffeur : ${expense.username}<br>
+        Montant : ${expense.amount} €<br>
+        Description : ${expense.description}<br>
+        Statut :
+        ${expense.reimbursed ? "✅ Remboursé" : "❌ Non remboursé"}<br>
+        Date : ${expense.date}
+    </div>
+`;
             });
 
             document.getElementById("totalExpenses").innerText = totalExpenses;
@@ -416,6 +409,24 @@ async function deleteExpense() {
     const message = document.getElementById("deleteExpenseMessage");
 
     const response = await fetch("/delete-expense", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id
+        })
+    });
+
+    const data = await response.json();
+
+    message.innerText = data.message || data.error;
+}
+async function reimburseExpense() {
+    const id = document.getElementById("reimburseExpenseId").value;
+    const message = document.getElementById("reimburseExpenseMessage");
+
+    const response = await fetch("/reimburse-expense", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

@@ -55,6 +55,15 @@ db.query(`
     ADD COLUMN IF NOT EXISTS username TEXT
 `);
 
+db.query(`
+    ALTER TABLE expenses
+    ADD COLUMN IF NOT EXISTS reimbursed BOOLEAN DEFAULT false
+`);
+db.query(`
+    ALTER TABLE expenses
+    ADD COLUMN IF NOT EXISTS username TEXT
+`);
+
 const adminPassword = bcrypt.hashSync("admin123", 10);
 const driverPassword = bcrypt.hashSync("chauffeur123", 10);
 
@@ -366,16 +375,20 @@ app.post("/rename-driver", async (req, res) => {
 app.post("/add-expense", async (req, res) => {
     const { type, amount, description } = req.body;
 
-    try {
-       await db.query(
-    "INSERT INTO expenses (type, amount, description, username) VALUES ($1, $2, $3, $4)",
-         [
-    type,
-    amount,
-    description,
-    req.session.user.username
-]
-        );
+try {
+    await db.query(
+        `
+        INSERT INTO expenses
+        (type, amount, description, username)
+        VALUES ($1, $2, $3, $4)
+        `,
+        [
+            type,
+            amount,
+            description,
+            req.session.user.username
+        ]
+    );
 
         res.json({
             message: "Dépense ajoutée avec succès"
@@ -452,23 +465,34 @@ app.get("/weekly-salaries", async (req, res) => {
     }
 });
 /* SALAIRE HEBDOMADAIRE */
-app.get("/weekly-salary", async (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).json({
-            error: "Non connecté"
-        });
-    }
-
-    try {
-        const result = await db.query(
-            `
-            SELECT COALESCE(SUM(driver_amount), 0) AS weekly_salary
-FROM transactions
-WHERE username = $1
-AND date >= NOW() - INTERVAL '7 days'
-            `,
-            [req.session.user.username]
-        );
+const result = await db.query(
+    `
+    SELECT
+        (
+            COALESCE(
+                (
+                    SELECT SUM(driver_amount)
+                    FROM transactions
+                    WHERE username = $1
+                    AND date >= NOW() - INTERVAL '7 days'
+                ),
+                0
+            )
+            +
+            COALESCE(
+                (
+                    SELECT SUM(amount)
+                    FROM expenses
+                    WHERE username = $1
+                    AND reimbursed = true
+                    AND date >= NOW() - INTERVAL '7 days'
+                ),
+                0
+            )
+        ) AS weekly_salary
+    `,
+    [req.session.user.username]
+);
 
         res.json({
             weekly_salary: result.rows[0].weekly_salary
@@ -559,6 +583,29 @@ app.post("/delete-expense", async (req, res) => {
     } catch (err) {
         res.status(500).json({
             error: "Erreur suppression dépense"
+        });
+    }
+});
+app.post("/reimburse-expense", async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        await db.query(
+            `
+            UPDATE expenses
+            SET reimbursed = true
+            WHERE id = $1
+            `,
+            [id]
+        );
+
+        res.json({
+            message: "Dépense remboursée avec succès"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur remboursement dépense"
         });
     }
 });
