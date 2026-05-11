@@ -465,13 +465,39 @@ app.get("/weekly-salaries", async (req, res) => {
             SELECT
                 users.username,
                 users.grade,
-                COALESCE(SUM(transactions.driver_amount), 0) AS weekly_salary
+
+                (
+                    COALESCE(
+                        SUM(transactions.driver_amount),
+                        0
+                    )
+
+                    +
+
+                    COALESCE(
+                        (
+                            SELECT SUM(expenses.amount)
+                            FROM expenses
+                            WHERE expenses.username = users.username
+                            AND expenses.reimbursed = true
+                            AND expenses.archived = false
+                            AND expenses.date >= NOW() - INTERVAL '7 days'
+                        ),
+                        0
+                    )
+                ) AS weekly_salary
+
             FROM users
+
             LEFT JOIN transactions
                 ON users.id = transactions.user_id
+                AND transactions.archived = false
                 AND transactions.date >= NOW() - INTERVAL '7 days'
+
             WHERE users.role = 'driver'
+
             GROUP BY users.id, users.username, users.grade
+
             ORDER BY weekly_salary DESC
         `);
 
