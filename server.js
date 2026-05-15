@@ -664,7 +664,7 @@ app.post("/reimburse-expense", async (req, res) => {
             `
             UPDATE expenses
             SET reimbursed = true
-            WHERE id = $1
+            WHERE username = $1
             `,
             [id]
         );
@@ -680,7 +680,7 @@ app.post("/reimburse-expense", async (req, res) => {
     }
 });
 app.post("/disable-user", async (req, res) => {
-    const { id } = req.body;
+    const { username } = req.body;
 
     try {
         await db.query(

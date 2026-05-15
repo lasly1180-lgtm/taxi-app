@@ -442,7 +442,7 @@ async function reimburseExpense() {
 }
 
 async function disableUser() {
-    const id = document.getElementById("disableUserId").value;
+    const username = document.getElementById("disableUsername").value;
     const message = document.getElementById("disableUserMessage");
 
     const response = await fetch("/disable-user", {
@@ -451,7 +451,7 @@ async function disableUser() {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            id
+            username
         })
     });
 
