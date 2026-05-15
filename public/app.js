@@ -149,9 +149,9 @@ if (transactionsDiv) {
                         <strong>${t.type}</strong><br>
 ID : ${t.id}<br>
 Nom chauffeur : ${t.username}<br>
-Total : ${t.total_amount} €<br>
-Gain chauffeur : ${t.driver_amount} €<br>
-Société : ${t.company_amount} €<br>
+Total : ${Math.floor(t.total_amount)} €<br>
+Gain chauffeur : ${Math.floor(t.driver_amount)} €<br>
+Société : ${Math.floor(t.company_amount)} €<br>
 KM : ${t.km}<br>
 Date : ${t.date}
 </div>
@@ -344,7 +344,7 @@ if (weeklySalaryElement) {
         .then(res => res.json())
         .then(data => {
             console.log("weekly salary:", data);
-            weeklySalaryElement.innerText = data.weekly_salary || 0;
+            weeklySalaryElement.innerText = Math.floor(data.weekly_salary || 0);
         })
         .catch(err => {
             console.log("Erreur weekly salary :", err);
