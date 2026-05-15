@@ -687,9 +687,9 @@ app.post("/disable-user", async (req, res) => {
             `
             UPDATE users
             SET active = false
-            WHERE id = $1
+             WHERE username = $1
             `,
-            [id]
+            [username]
         );
 
         res.json({
