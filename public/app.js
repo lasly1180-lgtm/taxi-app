@@ -329,7 +329,7 @@ if (driversList) {
                     <div style="border:1px solid #ddd; padding:10px; margin:10px 0;">
                         <strong>${driver.username}</strong><br>
                         Grade : ${driver.grade}<br>
-                        Salaire semaine : ${driver.weekly_salary} €
+                        Salaire semaine : ${Math.floor(driver.weekly_salary)} €
                     </div>
                 `;
             });
