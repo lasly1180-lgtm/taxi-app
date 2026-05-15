@@ -158,9 +158,9 @@ Date : ${t.date}
 `;
             });
 
-          document.getElementById("total").innerText = total;
-document.getElementById("company").innerText = company;
+          document.getElementById("total").innerText = Math.floor(total);
 
+document.getElementById("company").innerText = Math.floor(company);
 fetch("/expenses")
     .then(res => res.json())
     .then(expenses => {
@@ -174,7 +174,7 @@ fetch("/expenses")
 
         const netProfit = company - totalExpenses;
 
-        document.getElementById("netProfit").innerText = netProfit;
+        document.getElementById("netProfit").innerText = Math.floor(netProfit);
     }); 
         });
 }
@@ -312,7 +312,7 @@ expensesList.innerHTML += `
 `;
             });
 
-            document.getElementById("totalExpenses").innerText = totalExpenses;
+            document.getElementById("totalExpenses").innerText = Math.floor(totalExpenses);
         });
 }
 
