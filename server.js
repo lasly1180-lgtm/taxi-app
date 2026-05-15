@@ -21,6 +21,10 @@ db.query(`
         grade TEXT
     )
 `);
+db.query(`
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT true
+`);
 
 db.query(`
     CREATE TABLE IF NOT EXISTS transactions (
@@ -150,6 +154,11 @@ app.post("/login", async (req, res) => {
                 error: "Utilisateur introuvable"
             });
         }
+if (user.active === false) {
+    return res.status(403).json({
+        error: "Compte désactivé"
+    });
+}
 
         const validPassword = await bcrypt.compare(
             password,
@@ -667,6 +676,29 @@ app.post("/reimburse-expense", async (req, res) => {
     } catch (err) {
         res.status(500).json({
             error: "Erreur remboursement dépense"
+        });
+    }
+});
+app.post("/disable-user", async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        await db.query(
+            `
+            UPDATE users
+            SET active = false
+            WHERE id = $1
+            `,
+            [id]
+        );
+
+        res.json({
+            message: "Chauffeur désactivé avec succès"
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            error: "Erreur désactivation chauffeur"
         });
     }
 });

@@ -440,3 +440,22 @@ async function reimburseExpense() {
 
     message.innerText = data.message || data.error;
 }
+
+async function disableUser() {
+    const id = document.getElementById("disableUserId").value;
+    const message = document.getElementById("disableUserMessage");
+
+    const response = await fetch("/disable-user", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            id
+        })
+    });
+
+    const data = await response.json();
+
+    message.innerText = data.message || data.error;
+}
