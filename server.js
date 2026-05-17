@@ -664,7 +664,7 @@ app.post("/reimburse-expense", async (req, res) => {
             `
             UPDATE expenses
             SET reimbursed = true
-            WHERE username = $1
+            WHERE id = $1
             `,
             [id]
         );
