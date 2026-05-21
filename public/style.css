@@ -5,18 +5,18 @@
 }
 
 body {
+    margin: 0;
+    padding: 0;
+    background: #111111;
+    color: white;
     font-family: Arial, sans-serif;
-    background: #f1c40f;
-    min-height: 100vh;
-    color: #111;
-    padding: 30px;
 }
 
 .container {
-    max-width: 1100px;
-    margin: auto;
-    background: transparent;
-    padding: 10px;
+    background: #1c1c1c;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
 h1 {
