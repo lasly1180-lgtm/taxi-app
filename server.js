@@ -63,7 +63,10 @@ db.query(`
     ALTER TABLE expenses
     ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT false
 `);
-
+db.query(`
+    ALTER TABLE expenses
+    ADD COLUMN IF NOT EXISTS id SERIAL
+`);
 
 db.query(`
     ALTER TABLE expenses
