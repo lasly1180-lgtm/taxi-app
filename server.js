@@ -48,6 +48,15 @@ db.query(`
     ALTER TABLE transactions
     ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT false
 `);
+db.query(`
+    CREATE TABLE IF NOT EXISTS expenses (
+        type TEXT,
+        amount REAL,
+        description TEXT,
+        username TEXT,
+        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+`);
 
 db.query(`
     ALTER TABLE expenses
