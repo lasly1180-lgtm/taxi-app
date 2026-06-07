@@ -50,6 +50,7 @@ db.query(`
 `);
 db.query(`
     CREATE TABLE IF NOT EXISTS expenses (
+        id SERIAL PRIMARY KEY,
         type TEXT,
         amount REAL,
         description TEXT,
@@ -63,15 +64,7 @@ db.query(`
     ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT false
 `);
 
-db.query(`
-    CREATE TABLE IF NOT EXISTS expenses (
-        type TEXT,
-amount REAL,
-description TEXT,
-username TEXT,
-date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-`);
+
 db.query(`
     ALTER TABLE expenses
     ADD COLUMN IF NOT EXISTS username TEXT
